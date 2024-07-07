@@ -1,0 +1,13 @@
+; ai sample configuration file
+
+[audio_player]
+support_audio = true ; 垃圾识别语音播放
+
+[ai_function]
+support_ai = true ; 是否支持AI
+
+[trash_classify_switch]
+support_trash_classify = false ; 是否支持垃圾分类功能
+
+[hand_classify_switch]
+support_hand_classify = true ; 是否手势检测识别功能

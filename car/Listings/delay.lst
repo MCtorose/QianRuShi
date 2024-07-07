@@ -1,0 +1,18 @@
+C51 COMPILER V9.54   DELAY                                                                 07/06/2024 16:09:53 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN .\Objects\delay.obj
+COMPILER INVOKED BY: D:\Desktop\51单片机入门教程资料\编程软件\C51\BIN\C51.EXE delay.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJ
+                    -ECTEXTEND PRINT(.\Listings\delay.lst) TABS(2) OBJECT(.\Objects\delay.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          void delay(unsigned int xms)
+   3          {
+   4   1      unsigned char i,j
+   5   1      }
+*** ERROR C141 IN LINE 5 OF delay.c: syntax error near '}'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

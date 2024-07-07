@@ -1,0 +1,168 @@
+C51 COMPILER V9.54   CAR                                                                   07/06/2024 16:24:38 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE CAR
+OBJECT MODULE PLACED IN .\Objects\car.obj
+COMPILER INVOKED BY: D:\Desktop\51单片机入门教程资料\编程软件\C51\BIN\C51.EXE car.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJEC
+                    -TEXTEND PRINT(.\Listings\car.lst) TABS(2) OBJECT(.\Objects\car.obj)
+
+line level    source
+
+   1          /*****小车移动方向*******/
+   2          /*向前直行【四电机正转】    */
+   3          /*向后直行【四电机反转】    */
+   4          /*向前左拐【右电机正转，左电机停止】*/
+   5          /*向前右拐【右电机停止，左电机正转】*/
+   6          /*向后左拐【右电机反转，左电机停止】*/
+   7          /*向后右拐【右电机停止，左电机反转】*/
+   8          /*停止【四电机停止】    */
+   9          /*********小车移动方向*********/
+  10          
+  11          #include <REGX52.H>
+  12          #include "motor.h"
+  13          #include "Buzzer.h"
+  14          
+  15          sbit EN1A=P0^7;//左前
+  16          sbit EN1B=P0^2;//右前
+  17          sbit EN2A=P3^7;//左后
+  18          sbit EN2B=P3^2;//后后
+  19          
+  20          unsigned char counter1,speed;//计数值和比较值，用于输出PWM
+  21          
+  22          void car_stop()//小车停止
+  23          {
+  24   1        speed=0;
+  25   1        LF_motor_stop();
+  26   1        RF_motor_stop();
+  27   1        LR_motor_stop();
+  28   1        RR_motor_stop();  
+  29   1      }
+  30          
+  31          void Timer0_Init()    //100微秒@11.0592MHz
+  32          {
+  33   1        TMOD &= 0xF0;     //设置定时器模式
+  34   1        TMOD |=0X01;
+  35   1        TL0 = 0xA4;       //设置定时初始值
+  36   1        TH0 = 0xFF;       //设置定时初始值
+  37   1        TF0 = 0;        //清除TF0标志
+  38   1        TR0 = 1;        //定时器0开始计时
+  39   1        ET0=1;
+  40   1        EA=1;
+  41   1        PT0=0;
+  42   1      }
+  43          void Timer0_Routine() interrupt 1//中断函数
+  44          {
+  45   1        TL0=0xA4;
+  46   1        TH0=0XFF;
+  47   1      
+  48   1        counter1++;
+  49   1        if(counter1>=100)
+  50   1        {
+  51   2           counter1=0;  
+  52   2           car_stop();
+  53   2           Buzzer_Time(50);
+  54   2        } 
+C51 COMPILER V9.54   CAR                                                                   07/06/2024 16:24:38 PAGE 2   
+
+  55   1        if (counter1<speed)
+  56   1        {
+  57   2        EN1A=1;
+  58   2        EN1B=1;
+  59   2        EN2A=1;
+  60   2        EN2B=1;     
+  61   2        } 
+  62   1        else
+  63   1        {
+  64   2        EN1A=0;
+  65   2        EN1B=0;
+  66   2        EN2A=0;
+  67   2        EN2B=0; 
+  68   2        } 
+  69   1      }
+  70          void car_go()//小车前直行
+  71          {
+  72   1        speed=20;
+  73   1        LF_motor_go();
+  74   1        RF_motor_go();
+  75   1        LR_motor_go();
+  76   1        RR_motor_go();
+  77   1      } 
+  78          void car_back()//小车后直行
+  79          {
+  80   1        speed=18;
+  81   1        LF_motor_back();
+  82   1        RF_motor_back();
+  83   1        LR_motor_back();
+  84   1        RR_motor_back();  
+  85   1      } 
+  86          
+  87          void car_leftgo()//小车向前左拐
+  88          {
+  89   1        speed=18;
+  90   1        RF_motor_go();
+  91   1        RR_motor_go();
+  92   1        LF_motor_stop();
+  93   1        LR_motor_stop();
+  94   1      } 
+  95          void car_rightgo()//小车向前右拐
+  96          {
+  97   1        speed=18;
+  98   1        LF_motor_go();
+  99   1        LR_motor_go();
+ 100   1        RF_motor_stop();
+ 101   1        RR_motor_stop();  
+ 102   1      } 
+ 103          void car_leftback() //小车向后左拐
+ 104          {
+ 105   1        speed=18;
+ 106   1        LF_motor_back();
+ 107   1        LR_motor_back();
+ 108   1        LF_motor_stop();
+ 109   1        LR_motor_stop();
+ 110   1      }
+ 111          void car_rightback()//小车向后右拐
+ 112          {
+ 113   1        speed=18;
+ 114   1        LF_motor_back();
+ 115   1        LR_motor_back();
+ 116   1        RF_motor_stop();
+C51 COMPILER V9.54   CAR                                                                   07/06/2024 16:24:38 PAGE 3   
+
+ 117   1        RR_motor_stop();  
+ 118   1      }
+ 119          void car_rightstop()//小车原地右拐
+ 120          {
+ 121   1        speed=20;
+ 122   1        LF_motor_go();
+ 123   1        LR_motor_go();
+ 124   1        RF_motor_back();
+ 125   1        RR_motor_back();
+ 126   1      } 
+ 127          void car_leftstop()//小车原地左拐
+ 128          {
+ 129   1        speed=20;
+ 130   1        LF_motor_back();
+ 131   1        LR_motor_back();
+ 132   1        RF_motor_go();
+ 133   1        RR_motor_go();
+ 134   1      } 
+ 135          
+ 136          
+ 137          
+ 138          
+ 139          
+ 140          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    267    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
